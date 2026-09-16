@@ -96,15 +96,18 @@ def crear_casa():
 # Creo la carrera, que agrupa todos los elementos
 
 def crear_carrera():
+
     autos = crear_autos()
     semaforos = crear_semaforos()
     casa = crear_casa()
 
+    numero_carrera = obtener_numero_carrera()
+
     carrera = {
-        "idCarrera" : 1,
-        "autos" : autos,
-        "semaforos" : semaforos,
-        "casa" : casa,
+        "idCarrera": numero_carrera,
+        "autos": autos,
+        "semaforos": semaforos,
+        "casa": casa,
         "activa": True,
         "ganador": "",
         "tiempo": 0.0
@@ -245,4 +248,17 @@ def mostrar_historial(ruta="datos/historial.txt"):
     print("----------------------")
     print(contenido)
 
-    #-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+
+# Obtiene el número de la próxima carrera según el historial
+def obtener_numero_carrera(ruta="datos/historial.txt"):
+
+    numero_carrera = 1
+
+    archivo = open(ruta, "r", encoding="utf-8")
+    lineas = archivo.readlines()
+    archivo.close()
+
+    numero_carrera = len(lineas) + 1
+
+    return numero_carrera

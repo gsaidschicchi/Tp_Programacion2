@@ -7,9 +7,8 @@ Descripción: Simulador de carrera urbana con semáforos
 """
 
 import core.funciones as f
-import core.pantalla as p
-import core.GLOBALES as g
 import core.validaciones as v
+
 
 def main():
 
@@ -28,21 +27,26 @@ def main():
         try:
             opcion = int(input("Seleccione una opción: "))
 
-            patente = input("Ingrese una patente: ").upper()
-
-            if v.validar_patente(patente):
-                print("Patente válida")
-            else:
-                print("Patente inválida")
-
             if opcion == 1:
+
+                patente_valida = False
+
+                while patente_valida == False:
+
+                    patente = input("Ingrese una patente: ").upper()
+
+                    if v.validar_patente(patente):
+                        patente_valida = True
+                    else:
+                        print("Patente inválida. Formato esperado: AA123BB")
+
                 carrera = f.crear_carrera()
                 ganador = f.empezar_carrera(carrera)
 
                 print()
                 print("GANADOR:", ganador)
 
-                f.guardar_resultado(carrera,ganador)
+                f.guardar_resultado(carrera, ganador)
 
             elif opcion == 2:
                 f.mostrar_historial()
@@ -55,6 +59,7 @@ def main():
 
         except ValueError:
             print("Debe ingresar un número")
+
 
 if __name__ == "__main__":
     main()
