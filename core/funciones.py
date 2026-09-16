@@ -2,9 +2,11 @@
 
 # LIBRERIAS
 import random
+import time
 
 # MODULOS PROPIOS
 import core.GLOBALES as g
+import core.pantalla as p
 
 # -----------------------------------------------------------------------------
 
@@ -123,8 +125,124 @@ def mover_auto(auto):
 
 def cambiar_semaforo(semaforos):
     for semaforo in semaforos:
-        semaforo["estado"] = random.choice(g.ESTADO_SEMAFORO)
+        semaforo["estado"] = random.choice(g.ESTADOS_SEMAFORO)
 
 #-----------------------------------------------------------------------------
 
 # Veo si el auto puede avanzar o no
+
+def puede_avanzar(auto, semaforos):
+
+    avanzar = True
+    proxima_posicion = auto["posicion"] + auto["direccion"]
+
+    for semaforo in semaforos:
+
+        if proxima_posicion == semaforo["posicion"]:
+
+            if semaforo["estado"] == "Rojo":
+                avanzar = False
+
+    return avanzar
+
+#-----------------------------------------------------------------------------
+
+def procesar_auto(auto, semaforos):
+
+    if puede_avanzar(auto, semaforos):
+        mover_auto(auto)
+    else:
+        print(auto["nombre"], "espera en semáforo rojo")
+
+#-----------------------------------------------------------------------------
+
+def verificar_ganador(carrera):
+
+    posicion_llegada = carrera["casa"]["posicion"]
+    auto1 = carrera["autos"][0]
+    auto2 = carrera["autos"][1]
+
+    ganador = None
+
+    if auto1["posicion"] == posicion_llegada and auto2["posicion"] == posicion_llegada:
+        ganador = "EMPATE"
+
+    elif auto1["posicion"] == posicion_llegada:
+        ganador = auto1["nombre"]
+
+    elif auto2["posicion"] == posicion_llegada:
+        ganador = auto2["nombre"]
+
+    return ganador
+
+#-----------------------------------------------------------------------------
+
+def empezar_carrera(carrera):
+
+    ganador = None
+    ciclos = 0
+
+    auto1 = carrera["autos"][0]
+    auto2 = carrera["autos"][1]
+
+    while ganador == None:
+
+        procesar_auto(auto1, carrera["semaforos"])
+        procesar_auto(auto2, carrera["semaforos"])
+
+        p.limpiar_pantalla()
+
+        ciclos = ciclos + 1
+
+        print("Ciclo:", ciclos)
+
+        p.mostrar_pista(carrera)
+
+        ganador = verificar_ganador(carrera)
+
+        if ciclos % g.CICLOS_CAMBIO_SEMAFORO == 0:
+            cambiar_semaforo(carrera["semaforos"])
+
+        time.sleep(g.DURACION_CICLO)
+
+    return ganador
+
+#-----------------------------------------------------------------------------
+
+def mostrar_estado_semaforo(semaforos):
+
+    for semaforo in semaforos:
+        print("Semáforo", semaforo["id"], "-", semaforo["estado"])
+
+#-----------------------------------------------------------------------------
+
+# Guarda el resultado de una carrera en un archivo plano
+def guardar_resultado(carrera, ganador, ruta="datos/historial.txt"):
+
+    id_carrera = carrera["idCarrera"]
+
+    archivo = open(ruta, "a", encoding="utf-8")
+
+    archivo.write(
+        "Carrera: " + str(id_carrera) +
+        " - Ganador: " + ganador + "\n"
+    )
+
+    archivo.close()
+
+#-----------------------------------------------------------------------------
+    # Muestra el historial guardado en el archivo plano
+def mostrar_historial(ruta="datos/historial.txt"):
+
+    archivo = open(ruta, "r", encoding="utf-8")
+
+    contenido = archivo.read()
+
+    archivo.close()
+
+    print()
+    print("HISTORIAL DE CARRERAS")
+    print("----------------------")
+    print(contenido)
+
+    #-----------------------------------------------------------------------------

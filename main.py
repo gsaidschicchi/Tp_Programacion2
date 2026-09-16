@@ -7,20 +7,54 @@ Descripción: Simulador de carrera urbana con semáforos
 """
 
 import core.funciones as f
+import core.pantalla as p
 import core.GLOBALES as g
-
+import core.validaciones as v
 
 def main():
 
-    carrera = f.crear_carrera()
+    opcion = 0
 
-    while carrera["autos"][0]["posicion"] < carrera["casa"]["posicion"]:
-        f.mover_auto(carrera["autos"][0])
-        print(carrera["autos"][0]["posicion"])
+    while opcion != 3:
 
-    f.cambiar_semaforo(carrera["semaforos"])
-    for semaforo in carrera["semaforos"]:
-        print(semaforo["id"], semaforo["estado"])
+        print()
+        print("=============================")
+        print("       CARRERA URBANA")
+        print("=============================")
+        print("1. Iniciar carrera")
+        print("2. Ver historial")
+        print("3. Salir")
+
+        try:
+            opcion = int(input("Seleccione una opción: "))
+
+            patente = input("Ingrese una patente: ").upper()
+
+            if v.validar_patente(patente):
+                print("Patente válida")
+            else:
+                print("Patente inválida")
+
+            if opcion == 1:
+                carrera = f.crear_carrera()
+                ganador = f.empezar_carrera(carrera)
+
+                print()
+                print("GANADOR:", ganador)
+
+                f.guardar_resultado(carrera,ganador)
+
+            elif opcion == 2:
+                f.mostrar_historial()
+
+            elif opcion == 3:
+                print("Fin del programa")
+
+            else:
+                print("Opción inválida")
+
+        except ValueError:
+            print("Debe ingresar un número")
 
 if __name__ == "__main__":
     main()
